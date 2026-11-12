@@ -9,6 +9,10 @@ from vidpy import smart
 
 pytestmark = pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg not installed")
 
+# Some FFmpeg builds (e.g. Homebrew's default formula) ship without libfreetype → no drawtext filter.
+needs_drawtext = pytest.mark.skipif(not vidpy.ffmpeg.has_filter("drawtext"),
+                                    reason="this FFmpeg build has no drawtext (text) support")
+
 
 def _ff(*args):
     subprocess.run(["ffmpeg", "-v", "error", "-y", *args], check=True)
@@ -32,6 +36,7 @@ def test_catalog_sizes():
     assert sum(t["available"] for t in vidpy.list_transitions()) >= 40
 
 
+@needs_drawtext
 def test_full_timeline(media, tmp_path):
     p = vidpy.Project(width=640, height=360, fps=25)
     p.add_clip(media / "a.mp4", start=0.5, end=3).fx("cinematic").transition_to("circleopen", 0.5)
@@ -59,6 +64,7 @@ def test_formats(media, tmp_path, fmt):
     assert out.exists() and out.stat().st_size > 0
 
 
+@needs_drawtext
 def test_frame_and_slice(media, tmp_path):
     p = vidpy.Project(width=320, height=180)
     p.add_clip(media / "a.mp4").fx("timecode")
@@ -106,6 +112,7 @@ def test_preview_frame_inside_faded_overlay(media, tmp_path):
         assert p.preview_frame(t, tmp_path / f"o{t}.jpg", height=180).exists()
 
 
+@needs_drawtext
 def test_demo_project_builds(tmp_path):
     from vidpy.demo import make_demo
 
@@ -114,6 +121,7 @@ def test_demo_project_builds(tmp_path):
     proj.render(tmp_path / "demo.mp4", quality="draft", height=180, end=3)
 
 
+@needs_drawtext
 @pytest.mark.parametrize("anim", ["none", "fade", "slide_up", "slide_left", "zoom_pop", "typewriter"])
 def test_text_animations(media, tmp_path, anim):
     """Every title animation renders on its own (pinpoints FFmpeg-version-specific drawtext problems)."""
@@ -123,6 +131,7 @@ def test_text_animations(media, tmp_path, anim):
     p.render(tmp_path / f"t_{anim}.mp4", quality="draft")
 
 
+@needs_drawtext
 def test_new_style_filter_graph_option(media, tmp_path, monkeypatch):
     """Newer FFmpeg builds removed -filter_complex_script; vidpy must fall back to -/filter_complex."""
     probe = subprocess.run(["ffmpeg", "-v", "error", "-/filter_complex", "-h"], capture_output=True, text=True)
@@ -136,3 +145,15 @@ def test_new_style_filter_graph_option(media, tmp_path, monkeypatch):
     p.add_text("hi", duration=1)
     assert "-/filter_complex" in vidpy.build_command(p, tmp_path / "x.mp4")[0]
     p.render(tmp_path / "new_style.mp4", quality="draft")
+
+
+def test_missing_drawtext_gives_clear_error(media, tmp_path, monkeypatch):
+    from vidpy import ffmpeg as ff
+
+    real = ff.has_filter
+    monkeypatch.setattr(ff, "has_filter", lambda name: False if name == "drawtext" else real(name))
+    p = vidpy.Project(width=320, height=180)
+    p.add_clip(media / "a.mp4", end=1)
+    p.add_text("hi", duration=1)
+    with pytest.raises(vidpy.RenderError, match="no text support"):
+        p.render(tmp_path / "x.mp4", quality="draft")

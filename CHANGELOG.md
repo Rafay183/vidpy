@@ -4,6 +4,14 @@ All notable changes to vidpy are documented here. The format follows [Keep a Cha
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-13
+
+### Fixed
+- Works with the newest FFmpeg builds (Windows winget/Chocolatey, macOS Homebrew) that removed `-filter_complex_script`; vidpy now detects this and uses `-/filter_complex`.
+- Zoom-pop titles no longer crash FFmpeg 8.0 on Ubuntu 26.04.
+- Preview frames inside an overlay that fades in or out no longer fail.
+- Clear message when the installed FFmpeg has no text (`drawtext`) or subtitle support, with install instructions.
+
 ## [0.1.0] - 2026-11-13
 
 First public release.
@@ -21,5 +29,6 @@ First public release.
 - Python API (`vidpy.Project`), "edit as code" export to Python and FFmpeg, effect plugin decorators.
 - CLI: `studio`, `demo`, `render`, `convert`, `jumpcut`, `highlights`, `scenes`, `loudness`, `stabilize`, `compress`, `effects`, `info`, `version`.
 
-[Unreleased]: https://github.com/rafay183/vidpy/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/rafay183/vidpy/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/rafay183/vidpy/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/rafay183/vidpy/releases/tag/v0.1.0

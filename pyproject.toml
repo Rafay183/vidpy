@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vidpy-ray"
-version = "0.1.0"
+version = "0.1.1"
 description = "Open-source video editing studio in Python - a browser editor on localhost, a Python API and a CLI powered by FFmpeg: 79 video effects, 41 audio effects, 58 transitions, smart auto-editing and multi-format export."
 readme = "README.md"
 requires-python = ">=3.10"

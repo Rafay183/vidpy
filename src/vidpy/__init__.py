@@ -20,7 +20,7 @@ from .registry import AUDIO_EFFECTS, VIDEO_EFFECTS, Effect, Param, audio_effect,
 from .render import build_command, command_string, render, render_frame
 from .transitions import list_transitions
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "Project", "Clip", "Overlay", "Text", "AudioClip", "probe", "MediaInfo", "render", "render_frame",

@@ -352,6 +352,15 @@ def build_command(project: Project, output: str | Path, format: Optional[str] = 
         dt.append(f"subtitles=filename={ffmpeg.esc_path(project.subtitles['path'])}:"
                   f"force_style='Fontsize={sz},PrimaryColour=&H00{bgr},Outline=2,Shadow=1,MarginV=40'")
     if dt:
+        if any(d.startswith("drawtext") for d in dt) and not ffmpeg.has_filter("drawtext"):
+            raise ffmpeg.RenderError(
+                "Your FFmpeg build has no text support (the 'drawtext' filter is missing), so titles can't be "
+                "rendered. Install a full FFmpeg build: macOS → `brew uninstall ffmpeg && brew tap homebrew-ffmpeg/ffmpeg "
+                "&& brew install homebrew-ffmpeg/ffmpeg/ffmpeg`; any OS → `pip install 'vidpy-ray[ffmpeg]'` "
+                "and set VIDPY_FFMPEG to its path. Or remove the text items from the project.")
+        if any(d.startswith("subtitles") for d in dt) and not ffmpeg.has_filter("subtitles"):
+            raise ffmpeg.RenderError("Your FFmpeg build has no subtitle support (libass). Install a full FFmpeg build "
+                                     "or remove the subtitles from the project.")
         xv = g.uid("xv")
         g.add(f"[{cv}]" + ",".join(dt) + f"[{xv}]")
         cv = xv

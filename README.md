@@ -51,6 +51,8 @@ Created by **Muhammad Rafay Shaikh, from Pakistan**.
 * Python 3.10+ (Windows, macOS or Linux)
 * **FFmpeg** on your `PATH`:
   `winget install ffmpeg` · `brew install ffmpeg` · `sudo apt install ffmpeg`.
+  On **macOS**, Homebrew's default `ffmpeg` has no text support, so titles won't render. Use the full build instead:
+  `brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg`.
   If you can't install it system-wide, use `pip install "vidpy-ray[ffmpeg]"`, which bundles a static build.
   You can also point to a binary with `VIDPY_FFMPEG=/path/to/ffmpeg`.
 
