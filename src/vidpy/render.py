@@ -130,8 +130,6 @@ def _drawtext(g: _Graph, t, W: int, H: int) -> list[str]:
         opts.append(f"fontfile={ffmpeg.esc_path(font)}")
     base = dict(fontsize=size, fontcolor=col(t.color), x=f"'{x}'", y=f"'{y}'", alpha=f"'{alpha}'",
                 enable=f"'between(t,{_f(s)},{_f(e)})'", expansion="none", line_spacing=int(size * 0.2))
-    if t.animation == "zoom_pop":
-        base["fontsize"] = f"'{size}*(0.6+0.4*min(max((t-{_f(s)})/0.25,0),1))'"
     if t.box:
         base.update(box=1, boxcolor=col(t.box_color, t.box_opacity), boxborderw=max(int(size * 0.35), 2))
     if t.outline:
@@ -147,9 +145,25 @@ def _drawtext(g: _Graph, t, W: int, H: int) -> list[str]:
         for i in range(1, n + 1):
             ts = s + span * (i - 1) / n
             te = s + span * i / n if i < n else e
-            b = dict(base, enable=f"'between(t,{_f(ts)},{_f(te)})'", alpha="'1'")
+            b = dict(base, enable=f"'gte(t,{_f(ts)})*lt(t,{_f(te)})'", alpha="'1'")
             b["textfile"] = ffmpeg.esc_path(_text_file(g, t.text[:i]))
             out.append("drawtext=" + ":".join(opts + [f"{k}={v}" for k, v in b.items() if v is not None]))
+        return out
+    if t.animation == "zoom_pop":
+        # Pop-in with a slight overshoot. Each step is a drawtext with a FIXED font size:
+        # a per-frame `fontsize` expression crashes some FFmpeg 8.0 builds (Ubuntu 26.04).
+        steps = [0.55, 0.7, 0.85, 1.0, 1.08, 1.04, 1.0]
+        span = min(0.35, float(t.duration) / 2)
+        tf = ffmpeg.esc_path(_text_file(g, t.text))
+        out = []
+        for i, k in enumerate(steps):
+            ts = s + span * i / len(steps)
+            te = s + span * (i + 1) / len(steps) if i < len(steps) - 1 else e
+            fs = max(int(round(size * k)), 6)
+            b = dict(base, fontsize=fs, enable=f"'gte(t,{_f(ts)})*lt(t,{_f(te)})'", textfile=tf)
+            if "borderw" in b:
+                b["borderw"] = max(int(round(int(b["borderw"]) * k)), 1)
+            out.append("drawtext=" + ":".join(opts + [f"{k2}={v}" for k2, v in b.items() if v is not None]))
         return out
     base["textfile"] = ffmpeg.esc_path(_text_file(g, t.text))
     return ["drawtext=" + ":".join(opts + [f"{k}={v}" for k, v in base.items() if v is not None])]

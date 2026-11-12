@@ -163,4 +163,3 @@ Maintainers: the release process is in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 ## License
 
 MIT © Muhammad Rafay Shaikh
-"# vidpy" 

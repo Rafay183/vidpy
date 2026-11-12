@@ -112,3 +112,12 @@ def test_demo_project_builds(tmp_path):
     proj, files = make_demo(tmp_path)
     assert files and proj.clips and proj.duration > 5
     proj.render(tmp_path / "demo.mp4", quality="draft", height=180, end=3)
+
+
+@pytest.mark.parametrize("anim", ["none", "fade", "slide_up", "slide_left", "zoom_pop", "typewriter"])
+def test_text_animations(media, tmp_path, anim):
+    """Every title animation renders on its own (pinpoints FFmpeg-version-specific drawtext problems)."""
+    p = vidpy.Project(width=320, height=180)
+    p.add_clip(media / "a.mp4", end=1.5)
+    p.add_text("Hello vidpy", start=0.1, duration=1.2, size=90, animation=anim, outline=3, shadow=4, box=True)
+    p.render(tmp_path / f"t_{anim}.mp4", quality="draft")
