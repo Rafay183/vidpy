@@ -85,6 +85,24 @@ def available_encoders() -> frozenset[str]:
     return frozenset(names)
 
 
+@functools.lru_cache(maxsize=1)
+def _supports_filter_complex_script() -> bool:
+    out = subprocess.run([ffmpeg_bin(), "-hide_banner", "-h", "full"], capture_output=True, text=True,
+                         errors="replace").stdout
+    return "filter_complex_script" in out
+
+
+def filter_graph_file_args(path: str) -> list[str]:
+    """Arguments that load a filter graph from a file.
+
+    FFmpeg <= 8.1 understands ``-filter_complex_script``; newer builds removed it in favour of
+    the ``-/filter_complex <file>`` syntax (available since FFmpeg 7.0).
+    """
+    if _supports_filter_complex_script():
+        return ["-filter_complex_script", path]
+    return ["-/filter_complex", path]
+
+
 def has_filter(name: str) -> bool:
     try:
         return name in available_filters()

@@ -434,7 +434,7 @@ def build_command(project: Project, output: str | Path, format: Optional[str] = 
     with os.fdopen(fd, "w", encoding="utf-8") as fh:
         fh.write(graph)
     g.tmpfiles.append(gpath)
-    args += ["-filter_complex_script", gpath]
+    args += ffmpeg.filter_graph_file_args(gpath)
 
     if frame_at is not None or spec["video"] in ("gif", "png"):
         g.add(f"[{ca}]anullsink")

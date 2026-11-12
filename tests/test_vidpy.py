@@ -121,3 +121,18 @@ def test_text_animations(media, tmp_path, anim):
     p.add_clip(media / "a.mp4", end=1.5)
     p.add_text("Hello vidpy", start=0.1, duration=1.2, size=90, animation=anim, outline=3, shadow=4, box=True)
     p.render(tmp_path / f"t_{anim}.mp4", quality="draft")
+
+
+def test_new_style_filter_graph_option(media, tmp_path, monkeypatch):
+    """Newer FFmpeg builds removed -filter_complex_script; vidpy must fall back to -/filter_complex."""
+    probe = subprocess.run(["ffmpeg", "-v", "error", "-/filter_complex", "-h"], capture_output=True, text=True)
+    if "Unrecognized option" in probe.stderr:
+        pytest.skip("this FFmpeg predates the -/option syntax (FFmpeg < 7)")
+    from vidpy import ffmpeg as ff
+
+    monkeypatch.setattr(ff, "_supports_filter_complex_script", lambda: False)
+    p = vidpy.Project(width=320, height=180)
+    p.add_clip(media / "a.mp4", end=1).fx("vhs")
+    p.add_text("hi", duration=1)
+    assert "-/filter_complex" in vidpy.build_command(p, tmp_path / "x.mp4")[0]
+    p.render(tmp_path / "new_style.mp4", quality="draft")
