@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Media and projects you create while testing
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.vidpy.json
+!docs/**
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

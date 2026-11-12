@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vidpy Studio</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect rx='8' width='32' height='32' fill='%237c5cff'/><path d='M12 9l12 7-12 7z' fill='white'/></svg>">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header id="topbar">
+  <div class="brand"><span class="logo">▶</span> vidpy <b>Studio</b></div>
+  <div class="menu">
+    <button data-act="new" title="New project">New</button>
+    <button data-act="open" title="Open project">Open</button>
+    <button data-act="save" title="Save (Ctrl+S)">Save</button>
+    <span class="sep"></span>
+    <button data-act="undo" title="Undo (Ctrl+Z)">↶</button>
+    <button data-act="redo" title="Redo (Ctrl+Shift+Z)">↷</button>
+    <span class="sep"></span>
+    <input id="projName" spellcheck="false" title="Project name">
+    <select id="canvasSel" title="Canvas"></select>
+  </div>
+  <div class="right">
+    <span id="saveState" class="muted"></span>
+    <button data-act="code" title="Show the Python / FFmpeg code for this edit">&lt;/&gt; Code</button>
+    <button data-act="export" class="primary">Export ⤓</button>
+  </div>
+</header>
+
+<main id="workspace">
+  <aside id="left">
+    <nav class="tabs" id="leftTabs">
+      <button data-tab="media" class="on">Media</button>
+      <button data-tab="vfx">Effects</button>
+      <button data-tab="trans">Transitions</button>
+      <button data-tab="text">Text</button>
+      <button data-tab="afx">Audio</button>
+      <button data-tab="smart">Smart ✦</button>
+    </nav>
+    <section class="pane on" id="pane-media">
+      <div id="drop" class="drop">Drop video, audio or images here<br><small>or <label class="link">browse<input type="file" id="fileIn" multiple hidden></label> · <a class="link" id="importPath">import from a path</a></small></div>
+      <div id="mediaList" class="media-list"></div>
+    </section>
+    <section class="pane" id="pane-vfx"><input class="search" placeholder="Search 75+ video effects…" data-search="vfx"><div class="fxlist" id="vfxList"></div></section>
+    <section class="pane" id="pane-trans"><p class="hint">Drag a transition onto a clip on the main track (it blends into the next clip), or select a clip and click.</p><div class="fxlist" id="transList"></div></section>
+    <section class="pane" id="pane-text"><p class="hint">Click to add at the playhead.</p><div id="textTemplates" class="tpl"></div></section>
+    <section class="pane" id="pane-afx"><input class="search" placeholder="Search audio effects…" data-search="afx"><div class="fxlist" id="afxList"></div></section>
+    <section class="pane" id="pane-smart"><div id="smartPane"></div></section>
+  </aside>
+
+  <section id="center">
+    <div id="viewer">
+      <div id="stage">
+        <img id="frameImg" alt="">
+        <video id="previewVid" playsinline></video>
+        <div id="emptyHint">Drop media in the library, then add it to the timeline ✨</div>
+        <div id="busy" class="busy hidden"><div class="spinner"></div><span>Rendering preview…</span></div>
+      </div>
+    </div>
+    <div id="transport">
+      <button id="btnStart" title="Go to start (Home)">⏮</button>
+      <button id="btnBack" title="Back 1 frame (←)">◀︎</button>
+      <button id="btnPlay" class="play" title="Play preview (Space)">▶</button>
+      <button id="btnFwd" title="Forward 1 frame (→)">▶︎</button>
+      <button id="btnEnd" title="Go to end (End)">⏭</button>
+      <span id="timecode">00:00:00.00</span><span class="muted"> / </span><span id="durcode" class="muted">00:00:00.00</span>
+      <span class="grow"></span>
+      <label class="muted small">Preview <select id="pvQual"><option value="270">270p</option><option value="360" selected>360p</option><option value="540">540p</option><option value="720">720p</option></select></label>
+    </div>
+  </section>
+
+  <aside id="right">
+    <div id="inspector"></div>
+  </aside>
+</main>
+
+<section id="timelineWrap">
+  <div id="tlTools">
+    <button data-act="split" title="Split clip at playhead (S)">✂ Split</button>
+    <button data-act="dup" title="Duplicate (Ctrl+D)">⧉ Duplicate</button>
+    <button data-act="del" title="Delete (Del)">🗑 Delete</button>
+    <button data-act="addColor" title="Add a solid color clip">▭ Color clip</button>
+    <span class="grow"></span>
+    <span class="muted small">Zoom</span><input type="range" id="zoom" min="8" max="400" value="60">
+  </div>
+  <div id="timeline">
+    <div id="tlHeads"></div>
+    <div id="tlScroll"><div id="tlInner"><div id="ruler"></div><div id="tracks"></div><div id="playhead"><span></span></div></div></div>
+  </div>
+</section>
+
+<div id="jobs"></div>
+<div id="modal" class="hidden"><div class="card" id="modalCard"></div></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

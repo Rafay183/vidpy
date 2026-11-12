@@ -1,0 +1,43 @@
+name: 🐞 Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve vidpy! Please fill in as much as you can.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. vidpy demo
+        2. Drag "VHS Tape" onto the second clip
+        3. Press Export → WebM → see error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error message / screenshot
+      description: Terminal output, the red error box in the studio, browser console (F12), or a screenshot. The **</> Code** button shows the exact FFmpeg command, which helps a lot.
+  - type: input
+    id: version
+    attributes:
+      label: vidpy and FFmpeg version
+      description: Output of `vidpy version`
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS, Python version and browser
+      placeholder: Windows 11, Python 3.12, Chrome 130
+    validations:
+      required: true

@@ -1,0 +1,29 @@
+name: 🎨 Effect / transition request
+description: Ask for a new video effect, audio effect, look or transition
+labels: [effect]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Effect name
+      placeholder: e.g. Light leaks, Glitch transition, Voice de-reverb
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type
+      options: [Video effect, Audio effect, Transition, Text animation]
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What should it look / sound like?
+      description: Reference video, screenshot or the FFmpeg filter chain if you know it.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd like to add it myself (most effects are 3–10 lines)
